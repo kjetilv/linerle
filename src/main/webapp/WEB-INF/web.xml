@@ -10,6 +10,10 @@
     <filter>
         <filter-name>linerle</filter-name>
         <filter-class>vkode.linerle.Linerle</filter-class>
+        <init-param>
+            <param-name>prefix</param-name>
+            <param-value>/linerle-rpc</param-value>
+        </init-param>
     </filter>
     <filter-mapping>
         <filter-name>linerle</filter-name>
@@ -17,6 +21,6 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>struts2</filter-name>
-        <url-pattern>/linerle/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>

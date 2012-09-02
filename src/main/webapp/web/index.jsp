@@ -15,12 +15,81 @@
 <h1>Welcome To Struts 2!</h1>
 
 <script type="text/javascript">
-    <s:property value="script"/>
+<s:property value="script"/>
 </script>
 
 <p>
-    <s:property value="name"/>
-</p>
+<table id="books">
+    <thead>
+    <tr>
+        <td>Title</td>
+        <td>Author</td>
+        <td>Year</td>
+    </tr>
+    </thead>
+</table>
+
+<p>
+<h2>Add book</h2>
+<label for="title">Title
+    <input id="title" type="text" size="30">
+</label>
+<label for="year">Year
+    <input id="year" type="text" size="4">
+</label>
+<h3>Author</h3>
+<label for="author-last">Last name
+    <input id="author-last" type="text" size="30">
+</label>
+<label for="author-first">First name
+    <input id="author-first" type="text" size="30">
+</label>
+<button onclick="addCurrentBook();">
+    Add
+</button>
+<p/>
+    <script type="text/javascript">
+        function listBook(book) {
+            $('#books tr:last').after('<tr>' +
+                                      '  <td>' + book.title + '</td>' +
+                                      '  <td>' + book.author.lastName + ', ' + book.author.firstName + '</td>' +
+                                      '  <td>' + book.year.year + '</td>' +
+                                      '</tr>');
+        }
+
+        function refreshBooks() {
+            getBooks('', function(books) {
+                $('#books thead:last').after();
+                for (var i = 0; i < books.length; i++) {
+                    listBook(books[i]);
+                }
+            });
+        }
+        
+        function addCurrentBook() {
+            var title = $('#title').val();
+            var year = $('#year').val();
+            var firstName = $('#author-first').val();
+            var lastName = $('#author-last').val();
+            
+            var book = {
+                title: title,
+                year: {
+                    year: year
+                },
+                author: {
+                    firstName: firstName,
+                    lastName: lastName
+                }
+            };
+            
+            addBook(book, function() {
+                listBook(book);
+            });
+        }
+        
+        refreshBooks();
+</script>
 
 <button onclick="getBooks('David')" name="button1" value="ButtonValue">ButtonBody</button>
 

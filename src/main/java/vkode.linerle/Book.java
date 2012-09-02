@@ -2,10 +2,14 @@ package vkode.linerle;
 
 public class Book {
     
-    private String name;
+    private String id;
+    
+    private String title;
 
     private Author author;
-
+    
+    private Year year;
+    
     public Author getAuthor() {
         return author;
     }
@@ -15,12 +19,30 @@ public class Book {
         return this;        
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public Book setName(String name) {
-        this.name = name;
+    public Book setId(String id) {
+        this.id = id;
+        return this;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Book setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Year getYear() {
+        return year;
+    }
+
+    public Book setYear(Year year) {
+        this.year = year;
         return this;
     }
 }

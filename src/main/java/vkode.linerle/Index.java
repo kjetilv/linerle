@@ -22,6 +22,13 @@ public class Index extends ActionSupport {
                 return Index.this.books.getBooks(pattern);
             }
         });
+        LinerleCallbacks.defineCallback(this, new AbstractOp1<Index, Book, Void>("addBook") {
+            @Override
+            public Void execute(Book book) {
+                Index.this.books.addBook(book);
+                return null;
+            }
+        });
     }
 
     @Override
