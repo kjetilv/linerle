@@ -16,17 +16,17 @@ public class Index extends ActionSupport {
 
     public final void setBooks(Books books) {
         this.books = Objects.requireNonNull(books, "Null books!");
-        LinerleCallbacks.defineCallback(this, new AbstractOp1<Index, String, Book[]>("getBooks") {
+        LinerleCallbacks.define(this, new AbstractOp1<Index, String, Book[]>("getBooks") {
             @Override
             public Book[] execute(String pattern) {
                 return Index.this.books.getBooks(pattern);
             }
         });
-        LinerleCallbacks.defineCallback(this, new AbstractOp1<Index, Book, Void>("addBook") {
+        LinerleCallbacks.define(this, new AbstractOp1<Index, Book, Book>("addBook") {
             @Override
-            public Void execute(Book book) {
+            public Book execute(Book book) {
                 Index.this.books.addBook(book);
-                return null;
+                return book;
             }
         });
     }

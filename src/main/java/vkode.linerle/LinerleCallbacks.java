@@ -30,10 +30,10 @@ public final class LinerleCallbacks {
         objectMapper = om;
     }
 
-    private static final Pattern UUID_REGEX = 
+    private static final Pattern UUID_REGEX =
         Pattern.compile(".*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*");
 
-    private static final int minLength = 
+    private static final int minLength =
         (Linerle.getContextPath() + "/" + Linerle.getPrefix() + "/" + UUID.randomUUID()).length();
 
     public static String getScript(Object instance) {
@@ -46,25 +46,23 @@ public final class LinerleCallbacks {
                 sb.append("arg").append(i).append(", ");
             }
             sb.append("callback) {\n");
-            sb.append("  $.getJSON(\n");
-            sb.append("    '").append(Linerle.getContextPath()).append(Linerle.getPrefix()).append("/").append(
-                op.getName()).append("/").append(uuid).append("',\n");
-            sb.append("    {\n");
+            sb.append("  $.getJSON('").append(Linerle.getContextPath()).append(Linerle.getPrefix()).append("/").append(op.getName()).append("/").append(uuid).append("',\n");
+            sb.append("            { ");
             for (int i = 0, arity = op.getArity(); i < arity; i++) {
-                sb.append("      arg").append(i).append(": ");
-                sb.append("typeof arg").append(i).append(" == 'object' ? JSON.stringify(arg").append(i).append(") : arg").append(i);
-                sb.append(",\n");
+                sb.append("arg").append(i).append(": ");
+                sb.append("linerle_input_value(arg").append(i).append(")");
+                if (i + 1 < arity) {
+                    sb.append(",\n              ");
+                }
             }
-            sb.append("    },\n");
-            sb.append("    function (value) {\n");
-            sb.append("       callback(value);\n");
-            sb.append("    });\n");
+            sb.append(" },\n");
+            sb.append("            callback);\n");
             sb.append("};\n");
         }
         return sb.toString();
     }
 
-    public static <T> void defineCallback(Object instance, Op<T, ?> op) {
+    public static <T> void define(Object instance, Op<T, ?> op) {
         UUID key = UUID.randomUUID();
         opCallbacks.put(key, op);
         if (!instanceCallbacks.containsKey(instance)) {
@@ -82,11 +80,13 @@ public final class LinerleCallbacks {
                 String uuid = matcher.group(1);
                 UUID callbackUUID = UUID.fromString(uuid);
                 Op<?, ?> callback = opCallbacks.get(callbackUUID);
-                Object[] values = inputValues(req, callback);
-                Object returnValue = LinerleExec.execute(callback, values);
-                write(returnValue, getWriter(res));
+                if (callback != null) {
+                    Object[] values = inputValues(req, callback);
+                    Object returnValue = LinerleExec.execute(callback, values);
+                    write(returnValue, getWriter(res));
+                    return true;
+                }
             }
-            return true;
         }
         return false;
     }
@@ -94,7 +94,7 @@ public final class LinerleCallbacks {
     @SuppressWarnings("unchecked")
     private static Object[] inputValues(HttpServletRequest req, Op<?, ?> callback) {
         return values(callback.getTypes(), callback.getArity(),
-                                             (Map<String, String[]>) req.getParameterMap());
+                      (Map<String, String[]>) req.getParameterMap());
     }
 
     private static void write(Object value, PrintWriter writer) {
@@ -127,7 +127,7 @@ public final class LinerleCallbacks {
             try {
                 return objectMapper.readValue(string, type);
             } catch (IOException e) {
-                throw new IllegalArgumentException("Failed to read into " + type + ": " + string, e);   
+                throw new IllegalArgumentException("Failed to read into " + type + ": " + string, e);
             }
         }
         return objectMapper.convertValue(string, type);
