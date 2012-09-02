@@ -1,0 +1,210 @@
+8
+
+dir
+0
+https://arise.svn.sourceforge.net/svnroot/arise/trunk/arise/arise-osgi/osgi-mo/git/linerle/src/main/java/vkode.linerle
+https://arise.svn.sourceforge.net/svnroot/arise
+add
+
+
+
+
+
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+a61930d4-2544-0410-8578-bdb1f0894be1
+
+AbstractOp.java
+file
+
+
+
+add
+
+AbstractOp0.java
+file
+
+
+
+add
+
+AbstractOp1.java
+file
+
+
+
+add
+
+AbstractOp2.java
+file
+
+
+
+add
+
+AbstractOp3.java
+file
+
+
+
+add
+
+AbstractOp4.java
+file
+
+
+
+add
+
+AbstractOp5.java
+file
+
+
+
+add
+
+AbstractOp6.java
+file
+
+
+
+add
+
+Author.java
+file
+
+
+
+add
+
+Book.java
+file
+
+
+
+add
+
+Books.java
+file
+
+
+
+add
+
+CallId.java
+file
+
+
+
+add
+
+Index.java
+file
+
+
+
+add
+
+Linerle.java
+file
+
+
+
+add
+
+LinerleCallbacks.java
+file
+
+
+
+add
+
+Op.java
+file
+
+
+
+add
+
+Op0.java
+file
+
+
+
+add
+
+Op1.java
+file
+
+
+
+add
+
+Op2.java
+file
+
+
+
+add
+
+Op3.java
+file
+
+
+
+add
+
+Op4.java
+file
+
+
+
+add
+
+Op5.java
+file
+
+
+
+add
+
+Op6.java
+file
+
+
+
+add
+
+Year.java
+file
+
+
+
+add
+
+dom
+dir
+
+
+
+add
+
+utils
+dir
+
+
+
+add
+
