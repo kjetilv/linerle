@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class LinerleCallbacks {
-
+    
     private static final ConcurrentMap<UUID, Op<?, ?>> opCallbacks = new ConcurrentHashMap<>();
 
     private static final ConcurrentMap<Object, List<UUID>> instanceCallbacks = new ConcurrentHashMap<>();
