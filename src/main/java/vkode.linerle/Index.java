@@ -2,9 +2,7 @@ package vkode.linerle;
 
 import java.util.Objects;
 
-import com.opensymphony.xwork2.ActionSupport;
-
-public class Index extends ActionSupport {
+public class Index extends LinerleActionSupport {
 
     private static final long serialVersionUID = -6913325934811894699L;
 
@@ -16,13 +14,13 @@ public class Index extends ActionSupport {
 
     public final void setBooks(Books books) {
         this.books = Objects.requireNonNull(books, "Null books!");
-        LinerleCallbacks.define(this, new AbstractOp1<Index, String, Book[]>("getBooks") {
+        define(new AbstractOp1<Index, String, Book[]>("getBooks") {
             @Override
             public Book[] execute(String pattern) {
                 return Index.this.books.getBooks(pattern);
             }
         });
-        LinerleCallbacks.define(this, new AbstractOp1<Index, Book, Book>("addBook") {
+        define(new AbstractOp1<Index, Book, Book>("addBook") {
             @Override
             public Book execute(Book book) {
                 Index.this.books.addBook(book);
@@ -34,10 +32,6 @@ public class Index extends ActionSupport {
     @Override
     public String execute() throws Exception {
         return "ok";
-    }
-    
-    public String getScript() {
-        return LinerleCallbacks.getScript(this);
     }
     
     public String getName() {

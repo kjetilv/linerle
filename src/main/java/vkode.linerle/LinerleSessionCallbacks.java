@@ -4,32 +4,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class LinerleCallbacks {
+public final class LinerleSessionCallbacks {
     
-    private static final ConcurrentMap<UUID, Op<?, ?>> opCallbacks = new ConcurrentHashMap<>();
+    private final Map<UUID, Op<?, ?>> ops = new HashMap<>();
 
-    private static final ConcurrentMap<Object, List<UUID>> instanceCallbacks = new ConcurrentHashMap<>();
+    private final List<UUID> uuids = new ArrayList<>();
 
     private static final Pattern UUID_REGEX =
         Pattern.compile(".*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}).*");
 
-    private static final int minLength =
+    private static final int minLength = 
         (Linerle.getContextPath() + "/" + Linerle.getPrefix() + "/" + UUID.randomUUID()).length();
 
-    public static String getScript(Object instance) {
-        List<UUID> uuids = instanceCallbacks.get(instance);
+    public String getScript() {
         StringBuilder sb = new StringBuilder();
         for (UUID uuid : uuids) {
-            Op<?, ?> op = opCallbacks.get(uuid);
+            Op<?, ?> op = ops.get(uuid);
             sb.append("function ").append(op.getName()).append("(");
             for (int i = 0, arity = op.getArity(); i < arity; i++) {
                 sb.append("arg").append(i).append(", ");
@@ -38,8 +32,7 @@ public final class LinerleCallbacks {
             sb.append("  $.getJSON('").append(Linerle.getContextPath()).append(Linerle.getPrefix()).append("/").append(op.getName()).append("/").append(uuid).append("',\n");
             sb.append("            { ");
             for (int i = 0, arity = op.getArity(); i < arity; i++) {
-                sb.append("arg").append(i).append(": ");
-                sb.append("linerle_input_value(arg").append(i).append(")");
+                sb.append("arg").append(i).append(": ").append("linerle_input_value(arg").append(i).append(")");
                 if (i + 1 < arity) {
                     sb.append(",\n              ");
                 }
@@ -51,16 +44,13 @@ public final class LinerleCallbacks {
         return sb.toString();
     }
 
-    public static <T> void define(Object instance, Op<T, ?> op) {
+    public <T> void define(Op<T, ?> op) {
         UUID key = UUID.randomUUID();
-        opCallbacks.put(key, op);
-        if (!instanceCallbacks.containsKey(instance)) {
-            instanceCallbacks.putIfAbsent(instance, new ArrayList<UUID>());
-        }
-        instanceCallbacks.get(instance).add(key);
+        ops.put(key, op);
+        uuids.add(key);
     }
 
-    static boolean processed(HttpServletRequest req, HttpServletResponse res) {
+    public boolean processed(HttpServletRequest req, HttpServletResponse res) {
         String uri = req.getRequestURI();
         int length = uri.length();
         if (uri.contains(Linerle.getPrefix()) && length > minLength) {
@@ -68,9 +58,9 @@ public final class LinerleCallbacks {
             if (matcher.matches()) {
                 String uuid = matcher.group(1);
                 UUID callbackUUID = UUID.fromString(uuid);
-                Op<?, ?> callback = opCallbacks.get(callbackUUID);
+                Op<?, ?> callback = ops.get(callbackUUID);
                 if (callback != null) {
-                    Object[] values = inputValues(req, callback);
+                    Object[] values = LinerleJSON.inputValues(req, callback);
                     Object returnValue = LinerleExec.execute(callback, values);
                     LinerleJSON.write(returnValue, getWriter(res));
                     return true;
@@ -80,21 +70,11 @@ public final class LinerleCallbacks {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    private static Object[] inputValues(HttpServletRequest req, Op<?, ?> callback) {
-        return LinerleJSON.values(callback.getTypes(), callback.getArity(),
-                                  (Map<String, String[]>) req.getParameterMap());
-    }
-
     private static PrintWriter getWriter(HttpServletResponse res) {
         try {
             return res.getWriter();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to get writer: " + res, e);
         }
-    }
-
-    private LinerleCallbacks() {
-        throw new IllegalStateException("Don't make me!");
     }
 }

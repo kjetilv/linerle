@@ -32,17 +32,17 @@ public class Linerle implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, 
                          ServletResponse servletResponse, 
-                         FilterChain filterChain) 
-        throws IOException, ServletException {
-        if (servletRequest instanceof HttpServletRequest &&
-            servletResponse instanceof HttpServletResponse) {
-            HttpServletRequest req = (HttpServletRequest) servletRequest;
-            HttpServletResponse res = (HttpServletResponse) servletResponse;
-            if (!LinerleCallbacks.processed(req, res)) {
-                filterChain.doFilter(servletRequest, servletResponse);
-            }
-        } else {
+                         FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse res = (HttpServletResponse) servletResponse;
+        if (!handled(req, res)) {
             filterChain.doFilter(servletRequest, servletResponse);
         }
+    }
+
+    private static boolean handled(HttpServletRequest req, HttpServletResponse res) {
+        Object linerleActions = req.getSession().getAttribute("linerleActions");
+        return linerleActions != null && linerleActions instanceof LinerleSessionCallbacks && 
+               ((LinerleSessionCallbacks) linerleActions).processed(req, res);
     }
 }
