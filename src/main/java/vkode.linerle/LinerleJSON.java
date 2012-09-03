@@ -19,9 +19,9 @@ final class LinerleJSON {
     }
 
     @SuppressWarnings("unchecked")
-    static Object[] inputValues(HttpServletRequest req, Op<?, ?> callback) {
+    static Object[] inputValues(HttpServletRequest req, Op<?> callback) {
         return values(callback.getTypes(), callback.getArity(),
-                                  (Map<String, String[]>) req.getParameterMap());
+                      (Map<String, String[]>) req.getParameterMap());
     }
 
     static void write(Object value, PrintWriter writer) {
@@ -42,7 +42,7 @@ final class LinerleJSON {
     }
 
     private static Object convert(Class<?> type, String string) {
-        if (type.getPackage().getName().startsWith("vkode")) {
+        if (type.getPackage() != null && type.getPackage().getName().startsWith("vkode")) {
             try {
                 return objectMapper.readValue(string, type);
             } catch (IOException e) {

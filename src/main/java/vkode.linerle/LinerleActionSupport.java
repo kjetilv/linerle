@@ -9,7 +9,7 @@ public abstract class LinerleActionSupport extends ActionSupport {
 
     private final LinerleSessionCallbacks callbacks;
 
-    protected <T> void define(Op<T, ?> op) {
+    protected <T> void define(Op<?> op) {
         callbacks.define(op);
     }
     

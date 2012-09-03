@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public final class LinerleSessionCallbacks {
     
-    private final Map<UUID, Op<?, ?>> ops = new HashMap<>();
+    private final Map<UUID, Op<?>> ops = new HashMap<>();
 
     private final List<UUID> uuids = new ArrayList<>();
 
@@ -23,7 +23,7 @@ public final class LinerleSessionCallbacks {
     public String getScript() {
         StringBuilder sb = new StringBuilder();
         for (UUID uuid : uuids) {
-            Op<?, ?> op = ops.get(uuid);
+            Op<?> op = ops.get(uuid);
             sb.append("function ").append(op.getName()).append("(");
             for (int i = 0, arity = op.getArity(); i < arity; i++) {
                 sb.append("arg").append(i).append(", ");
@@ -44,7 +44,7 @@ public final class LinerleSessionCallbacks {
         return sb.toString();
     }
 
-    public <T> void define(Op<T, ?> op) {
+    public void define(Op<?> op) {
         UUID key = UUID.randomUUID();
         ops.put(key, op);
         uuids.add(key);
@@ -58,7 +58,7 @@ public final class LinerleSessionCallbacks {
             if (matcher.matches()) {
                 String uuid = matcher.group(1);
                 UUID callbackUUID = UUID.fromString(uuid);
-                Op<?, ?> callback = ops.get(callbackUUID);
+                Op<?> callback = ops.get(callbackUUID);
                 if (callback != null) {
                     Object[] values = LinerleJSON.inputValues(req, callback);
                     Object returnValue = LinerleExec.execute(callback, values);

@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public final class LinerleCallbacks {
     
-    private static final ConcurrentMap<UUID, Op<?, ?>> opCallbacks = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<UUID, Op<?>> opCallbacks = new ConcurrentHashMap<>();
 
     private static final ConcurrentMap<Object, List<UUID>> instanceCallbacks = new ConcurrentHashMap<>();
 
@@ -29,7 +29,7 @@ public final class LinerleCallbacks {
         List<UUID> uuids = instanceCallbacks.get(instance);
         StringBuilder sb = new StringBuilder();
         for (UUID uuid : uuids) {
-            Op<?, ?> op = opCallbacks.get(uuid);
+            Op<?> op = opCallbacks.get(uuid);
             sb.append("function ").append(op.getName()).append("(");
             for (int i = 0, arity = op.getArity(); i < arity; i++) {
                 sb.append("arg").append(i).append(", ");
@@ -51,7 +51,7 @@ public final class LinerleCallbacks {
         return sb.toString();
     }
 
-    public static <T> void define(Object instance, Op<T, ?> op) {
+    public static void define(Object instance, Op<?> op) {
         UUID key = UUID.randomUUID();
         opCallbacks.put(key, op);
         if (!instanceCallbacks.containsKey(instance)) {
@@ -68,7 +68,7 @@ public final class LinerleCallbacks {
             if (matcher.matches()) {
                 String uuid = matcher.group(1);
                 UUID callbackUUID = UUID.fromString(uuid);
-                Op<?, ?> callback = opCallbacks.get(callbackUUID);
+                Op<?> callback = opCallbacks.get(callbackUUID);
                 if (callback != null) {
                     Object[] values = inputValues(req, callback);
                     Object returnValue = LinerleExec.execute(callback, values);
@@ -81,7 +81,7 @@ public final class LinerleCallbacks {
     }
 
     @SuppressWarnings("unchecked")
-    private static Object[] inputValues(HttpServletRequest req, Op<?, ?> callback) {
+    private static Object[] inputValues(HttpServletRequest req, Op<?> callback) {
         return LinerleJSON.values(callback.getTypes(), callback.getArity(),
                                   (Map<String, String[]>) req.getParameterMap());
     }

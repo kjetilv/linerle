@@ -1,6 +1,10 @@
 package vkode.linerle;
 
-public interface Op0<T, R> extends Op<T, R> {
+public abstract class Op0<T, R> 
+    extends Op<R> 
+    implements IOp0<R> {
 
-    R execute();
+    protected Op0(String name) {
+        super(name);
+    }
 }
